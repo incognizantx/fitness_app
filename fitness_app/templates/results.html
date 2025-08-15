@@ -1,37 +1,49 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Plan</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Your Plan</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 <header>
-    <h1>Your Fitness Plan</h1>
-    <div class="theme-select">
-        <label for="themePicker">Theme:</label>
-        <select id="themePicker" onchange="changeTheme(this.value)">
-            <option value="blue">Electric Blue</option>
-            <option value="orange">Bright Orange</option>
-            <option value="green">Lime Green</option>
-        </select>
-    </div>
+  <h1>Your Fitness Plan</h1>
+  <div class="theme-select">
+    <label for="themePicker">Theme:</label>
+    <select id="themePicker" onchange="changeTheme(this.value)">
+      <option value="blue">Electric Blue</option>
+      <option value="orange">Bright Orange</option>
+      <option value="green">Lime Green</option>
+    </select>
+  </div>
 </header>
 
-
 <div class="container">
-    <div class="result">
-        <h3>{{ duration }} Plan:</h3>
-        <ul>
-            {% for item in plan %}
-            <li>{{ item }}</li>
-            {% endfor %}
-        </ul>
-    </div>
+  <div class="result">
+    <h3>Personalization Summary</h3>
+    <p><strong>Goal:</strong> {{ summary.goal }} &nbsp; | &nbsp;
+       <strong>Duration:</strong> {{ summary.duration }}</p>
+    <p><strong>Age:</strong> {{ summary.age }} &nbsp; | &nbsp;
+       <strong>Gender:</strong> {{ summary.gender }} &nbsp; | &nbsp;
+       <strong>Height:</strong> {{ summary.height }} cm &nbsp; | &nbsp;
+       <strong>Weight:</strong> {{ summary.weight }} kg</p>
+    <p><strong>BMI:</strong> {{ summary.bmi }} &nbsp; | &nbsp;
+       <strong>ML-Predicted Intensity:</strong> {{ summary.intensity }}</p>
+  </div>
 
-    <a href="{{ url_for('home') }}" class="back-btn">← Back</a>
+  <div class="result">
+    <h3>{{ duration }} Plan</h3>
+    <ul>
+      {% for item in plan %}
+        <li style="margin-bottom:8px">{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <a href="{{ url_for('home') }}" class="back-btn">← Back</a>
 </div>
+
 <script src="{{ url_for('static', filename='theme.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fitness Plan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/plan.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Monthly Fitness Plan</h1>
+        {% for week, days in fitness_plan.items() %}
+        <div class="week-plan">
+            <h2>{{ week }}</h2>
+            {% for exercises in days %}
+            <div class="day">
+                <strong>Day {{ loop.index }}:</strong>
+                <ul>
+                    {% for exercise in exercises %}
+                    <li>{{ exercise }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

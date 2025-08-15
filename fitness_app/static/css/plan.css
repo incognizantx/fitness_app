@@ -1,0 +1,55 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f7fa;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    color: #0077ff;
+}
+
+.week-plan {
+    margin-bottom: 2rem;
+    padding: 15px;
+    background: #eef6ff;
+    border-radius: 8px;
+}
+
+.week-plan h2 {
+    color: #ff6600;
+    margin-bottom: 10px;
+}
+
+.day {
+    margin-bottom: 15px;
+    background: #f9f9f9;
+    border-left: 5px solid limegreen;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.day strong {
+    display: block;
+    color: #0077ff;
+    margin-bottom: 5px;
+}
+
+ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+li {
+    margin-bottom: 5px;
+}
