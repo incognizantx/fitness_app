@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Plan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+    <h1>Your Fitness Plan</h1>
+    <div class="theme-select">
+        <label for="themePicker">Theme:</label>
+        <select id="themePicker" onchange="changeTheme(this.value)">
+            <option value="blue">Electric Blue</option>
+            <option value="orange">Bright Orange</option>
+            <option value="green">Lime Green</option>
+        </select>
+    </div>
+</header>
+
+
+<div class="container">
+    <div class="result">
+        <h3>{{ duration }} Plan:</h3>
+        <ul>
+            {% for item in plan %}
+            <li>{{ item }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <a href="{{ url_for('home') }}" class="back-btn">← Back</a>
+</div>
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+</body>
+</html>

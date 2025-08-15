@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Planner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+    <h1>Fitness Planner</h1>
+    <div class="theme-select">
+        <label for="themePicker">Theme:</label>
+        <select id="themePicker" onchange="changeTheme(this.value)">
+            <option value="blue">Electric Blue</option>
+            <option value="orange">Bright Orange</option>
+            <option value="green">Lime Green</option>
+        </select>
+    </div>
+    <p>Personalized Training Suggestions</p>
+</header>
+
+<div class="container">
+    <form action="{{ url_for('results') }}" method="post">
+        <label>Weight: <span id="weightValue">70</span> kg</label>
+        <input type="range" name="weight" min="30" max="140" value="70" step="1"
+               oninput="document.getElementById('weightValue').textContent = this.value">
+
+        <label>Height: <span id="heightValue">170</span> cm</label>
+        <input type="range" name="height" min="130" max="220" value="170" step="1"
+               oninput="document.getElementById('heightValue').textContent = this.value">
+
+        <label>Age: <span id="ageValue">25</span></label>
+        <input type="range" name="age" min="12" max="80" value="25" step="1"
+               oninput="document.getElementById('ageValue').textContent = this.value">
+
+        <label>Gender:</label>
+        <select name="gender" required>
+            <option value="">Select...</option>
+            <option>Male</option>
+            <option>Female</option>
+        </select>
+
+        <label>Goal:</label>
+        <select name="goal" required>
+            <option value="">Select...</option>
+            <option>Weight Loss</option>
+            <option>Muscle Gain</option>
+            <option>Endurance</option>
+        </select>
+
+        <label>Plan Duration:</label>
+        <select name="duration" required>
+            <option value="">Select...</option>
+            <option>Day</option>
+            <option>Week</option>
+            <option>Month</option>
+        </select>
+
+        <button type="submit">Generate Plan</button>
+    </form>
+
+    <div class="theme-buttons">
+        <button type="button" class="theme-btn blue" onclick="setTheme('blue')">Blue</button>
+        <button type="button" class="theme-btn orange" onclick="setTheme('orange')">Orange</button>
+        <button type="button" class="theme-btn green" onclick="setTheme('green')">Green</button>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+</body>
+</html>
