@@ -2,3 +2,8 @@ flask
 scikit-learn
 numpy
 joblib
+Flask-Login
+Flask-WTF
+Flask-SQLAlchemy
+email-validator
+python-dotenv

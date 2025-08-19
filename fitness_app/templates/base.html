@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>{% block title %}Fitness App{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<header>
+  <h1 style="margin:0">Fitness Planner</h1>
+
+  <!-- Theme dropdown (persists via localStorage) -->
+  <div class="theme-select">
+    <label for="themePicker">Theme:</label>
+    <select id="themePicker" onchange="changeTheme(this.value)">
+      <option value="blue">Electric Blue</option>
+      <option value="orange">Bright Orange</option>
+      <option value="green">Lime Green</option>
+    </select>
+  </div>
+
+  <nav style="margin-top:8px">
+    {% if current_user.is_authenticated %}
+      <span>Hi, {{ current_user.username }}!</span>
+      &nbsp;|&nbsp; <a href="{{ url_for('main.dashboard') }}" style="color:#fff">Dashboard</a>
+      &nbsp;|&nbsp; <a href="{{ url_for('auth.logout') }}" style="color:#fff">Logout</a>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}" style="color:#fff">Login</a>
+      &nbsp;|&nbsp; <a href="{{ url_for('auth.register') }}" style="color:#fff">Register</a>
+    {% endif %}
+  </nav>
+</header>
+
+<div class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div style="margin:10px 0">
+      {% for category, message in messages %}
+        <div class="flash flash-{{ category }}">{{ message }}</div>
+      {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</div>
+
+<script src="{{ url_for('static', filename='theme.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Register · Fitness App{% endblock %}
+{% block content %}
+<h2>Create account</h2>
+<form method="post">
+  {{ form.hidden_tag() }}
+
+  <label>Username</label>
+  {{ form.username(class="input") }}
+
+  <label>Email</label>
+  {{ form.email(class="input") }}
+
+  <label>Password</label>
+  {{ form.password(class="input") }}
+
+  <label>Confirm Password</label>
+  {{ form.confirm(class="input") }}
+
+  <div style="margin-top:10px"></div>
+  <label>Age</label>
+  {{ form.age(class="input") }}
+
+  <label>Height (cm)</label>
+  {{ form.height_cm(class="input") }}
+
+  <label>Weight (kg)</label>
+  {{ form.weight_kg(class="input") }}
+
+  <label>Gender</label>
+  {{ form.gender(class="input") }}
+
+  {{ form.submit(class="btn") }}
+</form>
+<p style="margin-top:10px">Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+{% endblock %}

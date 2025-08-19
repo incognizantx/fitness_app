@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Dashboard · Fitness App{% endblock %}
+{% block content %}
+<h2>Dashboard</h2>
+{% if current_user.is_authenticated %}
+  <p>Welcome, <strong>{{ current_user.username }}</strong>.</p>
+  <p>This is your dashboard. Next step: we’ll add today’s plan & progress tracking here.</p>
+{% else %}
+  <p>Please <a href="{{ url_for('auth.login') }}">log in</a>.</p>
+{% endif %}
+{% endblock %}
