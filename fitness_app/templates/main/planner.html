@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Create Plan · Fitness App{% endblock %}
+{% block content %}
+<h2>Create / Replace Plan</h2>
+<form method="post" class="card">
+  {{ form.hidden_tag() }}
+  <label>Suggestion Source</label>
+  <select name="source" class="input">
+    <option value="AI">AI (intensity by profile)</option>
+    <option value="Preset">Preset (balanced)</option>
+  </select>
+  <label>Goal</label>
+  <select name="goal" class="input">
+    <option>Weight Loss</option>
+    <option>Muscle Gain</option>
+    <option>Endurance</option>
+  </select>
+  <label>Duration (days)</label>
+  <select name="days" class="input">
+    <option>7</option>
+    <option selected>28</option>
+    <option>56</option>
+  </select>
+
+  <button class="btn" type="submit">Generate Plan</button>
+</form>
+{% endblock %}

@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, FloatField, SelectField, BooleanField
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, FloatField, SelectField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, NumberRange, Optional
 
 class RegisterForm(FlaskForm):
@@ -18,3 +18,8 @@ class LoginForm(FlaskForm):
     password = PasswordField("Password", validators=[DataRequired()])
     remember = BooleanField("Remember me")
     submit = SubmitField("Log in")
+class WorkoutPlanForm(FlaskForm):
+    source = StringField("Suggestion Source", validators=[Optional()])
+    goal = StringField("Goal", validators=[Optional()])
+    days = IntegerField("Duration", validators=[Optional(), NumberRange(1,56)])
+    submit = SubmitField("Create Plan")

@@ -1,7 +1,9 @@
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from fitness_app.extensions import db, login_manager
+from fitness_app import db
+from sqlalchemy import JSON, UniqueConstraint
 
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -20,6 +22,43 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password_hash, password)
+class WorkoutPlan(db.Model):
+    """One active plan per user at a time."""
+    id = db.Column(db.Integer, primary_key=True)
+    goal = db.Column(db.String, default="Weight Loss")
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
+    start_date = db.Column(db.Date, default=date.today, index=True)
+    days = db.Column(db.Integer, default=28)                # 4 weeks by default
+    source = db.Column(db.String(20), default="AI")         # "AI" or "Preset"
+    intensity = db.Column(db.String(10))                    # Low/Medium/High (from AI)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship("User", backref=db.backref("plans", lazy=True))
+
+class WorkoutDay(db.Model):
+    """Stores the plan for a specific calendar day as a JSON list of items."""
+    id = db.Column(db.Integer, primary_key=True)
+    plan_id = db.Column(db.Integer, db.ForeignKey("workout_plan.id"), nullable=False, index=True)
+    day_index = db.Column(db.Integer, nullable=False)  # 0..N-1 within plan
+    date = db.Column(db.Date, nullable=False, index=True)
+    items = db.Column(JSON, nullable=False)            # [{name, sets, reps, minutes, completed}]
+    # ensure one record per plan/day_index
+    __table_args__ = (UniqueConstraint('plan_id', 'day_index', name='uq_plan_day'),)
+
+    plan = db.relationship("WorkoutPlan", backref=db.backref("days_list", lazy=True, order_by="WorkoutDay.day_index"))
+
+class WorkoutLog(db.Model):
+    """Optional detailed log per completed item (checkbox events, notes)."""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), index=True)
+    workout_day_id = db.Column(db.Integer, db.ForeignKey("workout_day.id"), index=True)
+    item_index = db.Column(db.Integer, nullable=False)
+    completed = db.Column(db.Boolean, default=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    notes = db.Column(db.Text)
+
+    user = db.relationship("User")
+    day = db.relationship("WorkoutDay")
 
 @login_manager.user_loader
 def load_user(user_id):

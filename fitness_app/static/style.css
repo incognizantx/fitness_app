@@ -24,3 +24,4 @@ button:hover { background: var(--accent-color); }
 .flash-info { background:#e8f4ff; border:1px solid #c7e2ff; }
 .flash-warning { background:#fff7e6; border:1px solid #ffe0a6; }
 .flash-danger { background:#ffe8e8; border:1px solid #ffb8b8; }
+

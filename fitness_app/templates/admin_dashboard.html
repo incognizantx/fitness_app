@@ -11,6 +11,7 @@
         <th>Email</th>
         <th>Admin</th>
         <th>Age</th>
+        <th>Height</th>
       </tr>
     </thead>
     <tbody>
@@ -21,6 +22,7 @@
         <td>{{ user.email }}</td>
         <td>{{ "Yes" if user.is_admin else "No" }}</td>
         <td>{{user.age}}</td>
+        <td>{{user.height_cm}}</td>
       </tr>
       {% endfor %}
     </tbody>

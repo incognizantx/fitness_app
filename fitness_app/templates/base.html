@@ -24,6 +24,7 @@
     {% if current_user.is_authenticated %}
       <span>Hi, {{ current_user.username }}!</span>
       &nbsp;|&nbsp; <a href="{{ url_for('main.dashboard') }}" style="color:#fff">Dashboard</a>
+      &nbsp;|&nbsp; <a href="{{ url_for('main.planner') }}" style="color:#fff">Planner</a>
       &nbsp;|&nbsp; <a href="{{ url_for('auth.logout') }}" style="color:#fff">Logout</a>
     {% else %}
       <a href="{{ url_for('auth.login') }}" style="color:#fff">Login</a>

@@ -1,11 +1,29 @@
 {% extends "base.html" %}
 {% block title %}Dashboard · Fitness App{% endblock %}
 {% block content %}
-<h2>Dashboard</h2>
-{% if current_user.is_authenticated %}
-  <p>Welcome, <strong>{{ current_user.username }}</strong>.</p>
-  <p>This is your dashboard. Next step: we’ll add today’s plan & progress tracking here.</p>
+<h2>Today</h2>
+
+{% if today %}
+  <div class="card">
+    <h3>Today's Workout Plan</h3>
+    <p><strong>{{ today.name }}</strong></p>
+    <p>{{ today.description }}</p>
+  </div>
 {% else %}
-  <p>Please <a href="{{ url_for('auth.login') }}">log in</a>.</p>
+  <p>No workout plan for today. Create one <a href="{{ url_for('main.planner') }}">here</a>.</p>
 {% endif %}
+
+<script>
+document.addEventListener('change', (e) => {
+  if (e.target.matches('input[type="checkbox"][data-day]')) {
+    const form = new FormData();
+    form.append('day_id', e.target.dataset.day);
+    form.append('item_index', e.target.dataset.index);
+    fetch('{{ url_for("main.toggle_item") }}', { method: 'POST', body: form })
+      .then(r => r.json()).then(j => {
+        if (!j.ok) { alert(j.error || "Failed to save"); e.target.checked = !e.target.checked; }
+      }).catch(() => { alert("Network error"); e.target.checked = !e.target.checked; });
+  }
+});
+</script>
 {% endblock %}
