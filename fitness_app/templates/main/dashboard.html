@@ -6,8 +6,16 @@
 {% if today %}
   <div class="card">
     <h3>Today's Workout Plan</h3>
-    <p><strong>{{ today.name }}</strong></p>
-    <p>{{ today.description }}</p>
+    <ul>
+      {% for item in today.items %}
+        <li>
+          {{ item.name }}
+          {% if item.sets %} - {{ item.sets }} sets{% endif %}
+          {% if item.reps %} x {{ item.reps }} reps{% endif %}
+          {% if item.minutes %} - {{ item.minutes }} min{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
   </div>
 {% else %}
   <p>No workout plan for today. Create one <a href="{{ url_for('main.planner') }}">here</a>.</p>

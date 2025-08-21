@@ -14,15 +14,13 @@ def index():
 @main_bp.route("/dashboard")
 @login_required
 def dashboard():
-    todays_plan = WorkoutPlan.query.filter_by(
-        user_id=current_user.id,
-        created_at=date.today()
-    ).first()
-
+    plan, today, delta = get_today_for_user(current_user)
     return render_template(
         "main/dashboard.html",
         user=current_user,
-        today=todays_plan
+        plan=plan,
+        today=today,
+        day_index=delta
     )
 
 @main_bp.route("/admin")
@@ -40,22 +38,13 @@ def admin_dashboard():
 def planner():
     form = WorkoutPlanForm()   # ✅ create form instance
     if form.validate_on_submit():
-        plan = WorkoutPlan(
-            source=form.source.data,
-            goal=form.goal.data,
+        # Use the generator to create plan and days
+        generate_plan_for_user(
+            current_user,
             days=form.days.data,
-            user_id=current_user.id,
+            source=form.source.data,
+            goal=form.goal.data
         )
-
-    #         id = db.Column(db.Integer, primary_key=True)
-    # user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False, index=True)
-    # start_date = db.Column(db.Date, default=date.today, index=True)
-    # days = db.Column(db.Integer, default=28)                # 4 weeks by default
-    # source = db.Column(db.String(20), default="AI")         # "AI" or "Preset"
-    # intensity = db.Column(db.String(10))                    # Low/Medium/High (from AI)
-    # created_at = db.Column(db.DateTime, default=datetime.utcnow)
-        db.session.add(plan)
-        db.session.commit()
         flash("Workout plan created!", "success")
         return redirect(url_for("main.dashboard"))
 
