@@ -4,7 +4,7 @@ from flask_login import UserMixin
 from fitness_app.extensions import db, login_manager
 from fitness_app import db
 from sqlalchemy import JSON, UniqueConstraint
-
+from sqlalchemy.ext.mutable import MutableList
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), unique=True, nullable=False)
@@ -41,7 +41,7 @@ class WorkoutDay(db.Model):
     plan_id = db.Column(db.Integer, db.ForeignKey("workout_plan.id"), nullable=False, index=True)
     day_index = db.Column(db.Integer, nullable=False)  # 0..N-1 within plan
     date = db.Column(db.Date, nullable=False, index=True)
-    items = db.Column(JSON, nullable=False)            # [{name, sets, reps, minutes, completed}]
+    items = db.Column(MutableList.as_mutable(db.JSON), nullable=False)           # [{name, sets, reps, minutes, completed}]
     # ensure one record per plan/day_index
     __table_args__ = (UniqueConstraint('plan_id', 'day_index', name='uq_plan_day'),)
 

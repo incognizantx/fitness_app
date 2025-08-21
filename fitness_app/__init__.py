@@ -2,6 +2,9 @@ from flask import Flask
 from fitness_app.extensions import db, login_manager, csrf
 from fitness_app.auth.routes import auth_bp
 from fitness_app.main.routes import main_bp
+from flask_wtf.csrf import generate_csrf
+
+
 import os
 
 def create_app():
@@ -21,11 +24,17 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(main_bp)
 
+    # Inject CSRF token into all templates
+    @app.context_processor
+    def inject_csrf_token():
+        return dict(csrf_token=generate_csrf())
+
     # Create DB (dev convenience)
     with app.app_context():
         db.create_all()
 
     return app
+
 
 if __name__ == "__main__":
     app = create_app()

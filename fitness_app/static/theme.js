@@ -6,8 +6,8 @@ function applyTheme(color) {
     document.documentElement.style.setProperty('--primary-color', '#ff6600');
     document.documentElement.style.setProperty('--accent-color', '#cc5200');
   } else if (color === 'green') {
-    document.documentElement.style.setProperty('--primary-color', '#66cc33');
-    document.documentElement.style.setProperty('--accent-color', '#4d9926');
+    document.documentElement.style.setProperty('--primary-color', '#123524');
+    document.documentElement.style.setProperty('--accent-color', '#17442eff');
   }
 }
 
@@ -17,7 +17,7 @@ function changeTheme(color) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  const savedTheme = localStorage.getItem('themeColor') || 'blue';
+  const savedTheme = localStorage.getItem('themeColor') || 'green';
   const themePicker = document.getElementById('themePicker');
   if (themePicker) themePicker.value = savedTheme;
   applyTheme(savedTheme);

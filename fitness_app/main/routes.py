@@ -4,7 +4,7 @@ from fitness_app.models import User, db, WorkoutPlan, WorkoutDay, WorkoutLog
 from fitness_app.forms import WorkoutPlanForm
 from fitness_app.planner import generate_plan_for_user, get_today_for_user
 from datetime import date
-
+from sqlalchemy.orm.attributes import flag_modified
 main_bp = Blueprint("main", __name__, url_prefix="")
 
 @main_bp.route("/")
@@ -15,12 +15,19 @@ def index():
 @login_required
 def dashboard():
     plan, today, delta = get_today_for_user(current_user)
+    days = []
+    if plan:
+        days = (WorkoutDay.query
+                .filter_by(plan_id=plan.id)
+                .order_by(WorkoutDay.day_index)
+                .all())
     return render_template(
         "main/dashboard.html",
         user=current_user,
         plan=plan,
         today=today,
-        day_index=delta
+        day_index=delta,
+        days=days
     )
 
 @main_bp.route("/admin")
@@ -53,21 +60,27 @@ def planner():
 @main_bp.route("/toggle_item", methods=["POST"])
 @login_required
 def toggle_item():
-    """AJAX: toggle completion for an item in today's workout."""
-    day_id = int(request.form["day_id"])
-    idx = int(request.form["item_index"])
-    day = WorkoutDay.query.get_or_404(day_id)
-    if day.plan.user_id != current_user.id:
-        return jsonify({"ok": False, "error": "Forbidden"}), 403
+    day_id = request.form.get("day_id")
+    item_index = request.form.get("item_index", type=int)
+    if not day_id or item_index is None:
+        flash("Invalid request.", "danger")
+        return redirect(url_for("main.dashboard"))
 
-    items = day.items or []
-    if idx < 0 or idx >= len(items):
-        return jsonify({"ok": False, "error": "Bad index"}), 400
+    day = WorkoutDay.query.filter_by(id=day_id).first()
+    if not day or day.plan.user_id != current_user.id:
+        flash("Not authorized.", "danger")
+        return redirect(url_for("main.dashboard"))
 
-    items[idx]["completed"] = not bool(items[idx].get("completed"))
-    day.items = items
-    db.session.add(day)
-    db.session.add(WorkoutLog(user_id=current_user.id, workout_day_id=day.id, item_index=idx,
-                              completed=items[idx]["completed"]))
-    db.session.commit()
-    return jsonify({"ok": True, "completed": items[idx]["completed"]})
+    # Mark the item as completed
+    items = day.items
+    if 0 <= item_index < len(items):
+        items[item_index]["completed"] = True
+        day.items = items  # Assign back to trigger SQLAlchemy change tracking
+        flag_modified(day, "items")
+        db.session.commit()
+        flash("Exercise marked as completed!", "success")
+        
+    else:
+        flash("Invalid exercise index.", "danger")
+
+    return redirect(url_for("main.dashboard"))
