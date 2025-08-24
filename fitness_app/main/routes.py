@@ -5,11 +5,14 @@ from fitness_app.forms import WorkoutPlanForm
 from fitness_app.planner import generate_plan_for_user, get_today_for_user
 from datetime import date
 from sqlalchemy.orm.attributes import flag_modified
+from fitness_app.planner import MEDIA_LINKS
 main_bp = Blueprint("main", __name__, url_prefix="")
 
 @main_bp.route("/")
 def index():
-    return render_template("main/dashboard.html")
+    if current_user.is_authenticated:
+        return redirect(url_for("main.dashboard"))
+    return redirect(url_for("auth.login"))
 
 @main_bp.route("/dashboard")
 @login_required
@@ -27,7 +30,9 @@ def dashboard():
         plan=plan,
         today=today,
         day_index=delta,
-        days=days
+        days=days,
+        media_links=MEDIA_LINKS,
+        bg_image="backgrounds/dashboard.jpg"
     )
 
 @main_bp.route("/admin")
@@ -47,15 +52,15 @@ def planner():
     if form.validate_on_submit():
         # Use the generator to create plan and days
         generate_plan_for_user(
-            current_user,
+            intensity=form.intensity.data or "Medium",
+            user=current_user,
             days=form.days.data,
-            source=form.source.data,
             goal=form.goal.data
         )
         flash("Workout plan created!", "success")
         return redirect(url_for("main.dashboard"))
 
-    return render_template("main/planner.html", form=form)  # ✅ pass form
+    return render_template("main/planner.html", form=form, bg_image="backgrounds/planner.jpg")  # ✅ pass form
 
 @main_bp.route("/toggle_item", methods=["POST"])
 @login_required

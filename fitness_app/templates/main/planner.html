@@ -4,23 +4,21 @@
 <h2>Create / Replace Plan</h2>
 <form method="post" class="card">
   {{ form.hidden_tag() }}
-  <label>Suggestion Source</label>
-  <select name="source" class="input">
-    <option value="AI">AI (intensity by profile)</option>
-    <option value="Preset">Preset (balanced)</option>
-  </select>
+  <label for="intensity">Intensity</label>
+<select name="intensity" id="intensity" class="input" style="margin-bottom: 10px;">
+  <option value="Low">Low</option>
+  <option value="Medium" selected>Medium</option>
+  <option value="High">High</option>
+</select>
   <label>Goal</label>
-  <select name="goal" class="input">
+  <select name="goal" class="input" style="margin-bottom: 10px;">
     <option>Weight Loss</option>
     <option>Muscle Gain</option>
     <option>Endurance</option>
   </select>
-  <label>Duration (days)</label>
-  <select name="days" class="input">
-    <option>7</option>
-    <option selected>28</option>
-    <option>56</option>
-  </select>
+  <label for="days_slider">Duration (days): <span id="daysValue">28</span></label>
+  <input type="range" name="days" id="days_slider" class="input" min="1" max="60" value="28" oninput="daysValue.textContent = days_slider.value" style="width:95%; margin-bottom: 20px;">
+
 
   <button class="btn" type="submit">Generate Plan</button>
 </form>

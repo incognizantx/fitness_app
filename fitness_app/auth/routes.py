@@ -23,13 +23,15 @@ def register():
             height_cm=form.height_cm.data,
             weight_kg=form.weight_kg.data,
             gender=form.gender.data or None,
+            fitness_level=form.fitness_level.data or "Intermediate",
+            previous_goal=form.previous_goal.data or "Weight Loss"
         )
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
         flash("Account created! Please log in.", "success")
         return redirect(url_for("auth.login"))
-    return render_template("auth/register.html", form=form)
+    return render_template("auth/register.html", form=form, bg_image="backgrounds/register.jpg")
 
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -37,15 +39,20 @@ def login():
         return redirect(url_for("main.dashboard"))
     form = LoginForm()
     if form.validate_on_submit():
-        user = User.query.filter_by(email=form.email.data.strip().lower()).first()
-        if not user or not user.check_password(form.password.data):
-            flash("Invalid email or password.", "danger")
-            return render_template("auth/login.html", form=form)
-        login_user(user, remember=form.remember.data)
-        flash("Welcome back!", "success")
-        next_url = request.args.get("next") or url_for("main.dashboard")
-        return redirect(next_url)
-    return render_template("auth/login.html", form=form)
+        identifier = form.identifier.data
+        password = form.password.data
+
+        # Try to find user by username or email
+        user = User.query.filter(
+            (User.username == identifier) | (User.email == identifier)
+        ).first()
+
+        if user and user.check_password(password):
+            login_user(user, remember=form.remember.data)
+            return redirect(url_for('main.dashboard'))
+        else:
+            flash("Invalid username/email or password.", "danger")
+    return render_template('auth/login.html', form=form, bg_image="backgrounds/login.jpg")
 
 @auth_bp.route("/logout")
 def logout():

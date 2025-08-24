@@ -10,7 +10,7 @@
 <header>
   <h1 style="margin:0">Fitness Planner</h1>
 
-  <!-- Theme dropdown (persists via localStorage) -->
+  <!-- Theme dropdown (persists via localStorage) 
   <div class="theme-select">
     <label for="themePicker">Theme:</label>
     <select id="themePicker" onchange="changeTheme(this.value)">
@@ -19,7 +19,7 @@
       <option value="green">Phthalo Green</option>
     </select>
   </div>
-
+-->
   <nav style="margin-top:8px">
     {% if current_user.is_authenticated %}
       <span>Hi, {{ current_user.username }}!</span>
@@ -44,9 +44,13 @@
     {% endif %}
   {% endwith %}
 
+  {% if bg_image %}
+    <div class="bg-blur" style="background-image: url('{{ url_for('static', filename=bg_image) }}');"></div>
+  {% endif %}
+
   {% block content %}{% endblock %}
 </div>
 
-<script src="{{ url_for('static', filename='theme.js') }}"></script>
+<!-- <script src="{{ url_for('static', filename='theme.js') }}"></script> -->
 </body>
 </html>

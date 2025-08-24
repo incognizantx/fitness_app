@@ -2,11 +2,8 @@ from datetime import date, timedelta
 import random
 from typing import List, Dict, Tuple, Literal
 from fitness_app.models import WorkoutPlan, WorkoutDay, db, User
-# If you already integrated a tiny ML earlier, you can import it here:
-try:
-    from ml_engine import predict_intensity  # (age, weight, height, gender, goal) -> ("Low/Medium/High", bmi)
-except Exception:
-    predict_intensity = None  # fallback to heuristic if not available
+from fitness_app.ml_engine import suggest_best_plan 
+
 
 ExerciseItem = Dict[str, object]  # {name, sets?, reps?, minutes?, completed}
 
@@ -22,24 +19,34 @@ BANK = {
         "Cycling", "Elliptical", "Stair climber", "Swim"
     ]
 }
-
+MEDIA_LINKS = {
+    "Back squats": "https://www.youtube.com/embed/-bJIpOq-LWk",
+    "Front squats": "https://www.youtube.com/embed/W9jJaI4cHJU",
+    "Romanian deadlifts": "https://www.youtube.com/embed/2bmuYtv4HbQ",
+    "Deadlifts": "https://www.youtube.com/embed/yPqv3ejnZvc?si=BW1YXRhzOT_9Miqk",
+    "Bench press": "https://www.youtube.com/embed/4_QuyfOCI5U",
+    "Overhead press": "https://www.youtube.com/embed/cGnhixvC8uA",
+    "Barbell rows": "https://www.youtube.com/embed/bm0_q9bR_HA",
+    "Pull-ups": "https://www.youtube.com/embed/9yVGh3XbJ34",
+    "Dips": "https://www.youtube.com/embed/WVeZDBhZwLA",
+    "Goblet squats": "https://www.youtube.com/embed/MWHIs0zxkCU",
+    "Walking lunges": "https://www.youtube.com/embed/UInwcEa5BH4",
+    "Kettlebell swings": "https://www.youtube.com/embed/r777bo9KuY4",
+    "Plank": "https://www.youtube.com/embed/mwlp75MS6Rg",
+    "Rower easy": "https://www.youtube.com/embed/0R9ZQd3aM6s",
+    "Incline walk": "https://liftmanual.com/wp-content/uploads/2023/04/walking-on-incline-treadmill.jpg",
+    "Steady run": "https://www.youtube.com/embed/VIDEO_ID16",
+    "Tempo run": "https://www.youtube.com/embed/VIDEO_ID17",
+    "Cycling": "https://www.youtube.com/embed/VIDEO_ID18",
+    "Elliptical": "https://www.youtube.com/embed/VIDEO_ID19",
+    "Stair climber": "https://www.youtube.com/embed/VIDEO_ID20",
+    "Swim": "https://www.youtube.com/embed/VIDEO_ID21"
+}
 def bmi_from_profile(u: User) -> float | None:
     if not (u.height_cm and u.weight_kg):
         return None
     h = max(u.height_cm, 1) / 100.0
     return round(u.weight_kg / (h*h), 1)
-
-def intensity_from_profile(u: User, goal: Literal["Weight Loss","Muscle Gain","Endurance"]) -> str:
-    # Prefer ML if provided
-    if predict_intensity and u.age and u.weight_kg and u.height_cm and u.gender:
-        label, _ = predict_intensity(u.age, u.weight_kg, u.height_cm, u.gender, goal)
-        return label
-
-    # Fallback heuristic by age & BMI
-    bmi = bmi_from_profile(u) or 24.0
-    if (u.age or 30) < 25 and bmi < 26: return "High"
-    if (u.age or 35) > 45 or bmi > 30:  return "Low"
-    return "Medium"
 
 def preset_volume(intensity: str) -> Tuple[int, int, int]:
     """returns (strength_moves, sets, cardio_min)"""
@@ -48,7 +55,7 @@ def preset_volume(intensity: str) -> Tuple[int, int, int]:
         "Medium": (4, 3, 25),
         "High": (5, 4, 35),
     }
-    return cfg.get(intensity, (4,3,25))
+    return cfg.get(intensity)
 
 def make_day(strength_moves: int, sets: int, cardio_min: int) -> List[ExerciseItem]:
     strength = random.sample(BANK["strength"], strength_moves)
@@ -56,20 +63,58 @@ def make_day(strength_moves: int, sets: int, cardio_min: int) -> List[ExerciseIt
     items.append({"name": random.choice(BANK["cardio"]), "minutes": cardio_min, "completed": False})
     return items
 
-def generate_plan_for_user(user: User, days: int = 28, source: str = "AI",
-                           goal: Literal["Weight Loss","Muscle Gain","Endurance"]="Weight Loss") -> WorkoutPlan:
-    intensity = intensity_from_profile(user, goal) if source == "AI" else "Medium"
+def generate_plan_for_user(
+    user: User,
+    days: int = 28,
+    source: str = "AI",
+    goal: Literal["Weight Loss", "Muscle Gain", "Endurance"] = "Weight Loss",
+    intensity: Literal["Low", "Medium", "High"] = "Medium"
+) -> WorkoutPlan:
+    # 1. Prepare user features for ML
+    user_features = {
+        "age": user.age,
+        "gender": 1 if user.gender == "Male" else 0,
+        "height_cm": user.height_cm,
+        "weight_kg": user.weight_kg,
+        "BMI": bmi_from_profile(user),
+        "fitness_level": {"Beginner": 0, "Intermediate": 1, "Advanced": 2}.get(getattr(user, "fitness_level", "Intermediate"), 1),
+        "previous_success_rate": getattr(user, "previous_success_rate", 0.7),
+        "previous_goal": {"Weight Loss": 0, "Muscle Gain": 1, "Endurance": 2}.get(getattr(user, "previous_goal", goal), 0)
+    }
 
+    # 2. Build a candidate plan only for the selected intensity
+    intensity_val = {"Low": 0, "Medium": 1, "High": 2}[intensity]
     strength_moves, sets, cardio = preset_volume(intensity)
+    plan_candidates = [{
+        "goal": {"Weight Loss": 0, "Muscle Gain": 1, "Endurance": 2}[goal],
+        "plan_length_days": days,
+        "avg_intensity": intensity_val,
+        "avg_sets_per_day": sets,
+        "avg_reps_per_set": 8,
+        "avg_cardio_minutes_per_day": cardio,
+        "exercise_types_count": strength_moves,
+        "previous_success_rate": user_features["previous_success_rate"],
+        "previous_goal": user_features["previous_goal"],
+        "plan_adherence_rate": 0.8,  # Placeholder or from user history
+        "user_rating": 4.0           # Placeholder or from user history
+    }]
+
+    # 3. Use ML to select the best plan (from one candidate, but keeps interface consistent)
+    best_plan_params = suggest_best_plan(user_features, plan_candidates)
+
+    # 4. Use best plan parameters to generate the actual plan
+    intensity_label = intensity  # already a string: "Low", "Medium", or "High"
+    strength_moves = best_plan_params["exercise_types_count"]
+    sets = best_plan_params["avg_sets_per_day"]
+    cardio = best_plan_params["avg_cardio_minutes_per_day"]
     start = date.today()
 
-    plan = WorkoutPlan(user_id=user.id, start_date=start, days=days, source=source, intensity=intensity)
+    plan = WorkoutPlan(user_id=user.id, start_date=start, days=days, source=source, intensity=intensity_label)
     db.session.add(plan)
     db.session.flush()  # get plan.id
 
     for i in range(days):
         d = start + timedelta(days=i)
-        # 3 on, 1 off pattern
         if (i % 4) == 3:
             items = [{"name": "Active recovery walk", "minutes": 20, "completed": False}]
         else:
@@ -82,7 +127,7 @@ def generate_plan_for_user(user: User, days: int = 28, source: str = "AI",
 def get_today_for_user(user: User) -> Tuple[WorkoutPlan | None, WorkoutDay | None, int | None]:
     plan = (WorkoutPlan.query
             .filter_by(user_id=user.id)
-            .order_by(WorkoutPlan.start_date.desc())
+            .order_by(WorkoutPlan.id.desc())
             .first())
     if not plan: return None, None, None
     delta = (date.today() - plan.start_date).days

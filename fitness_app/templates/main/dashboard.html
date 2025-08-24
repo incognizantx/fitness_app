@@ -2,10 +2,9 @@
 {% block title %}Dashboard · Fitness App{% endblock %}
 {% block content %}
 <h2>Workout Plan Overview</h2>
-
-<div style="display: flex; align-items: flex-start; gap: 32px;">
-  <!-- Today's Plan Card -->
-  <div style="min-width: 260px;">
+<div style="display: flex; align-items: flex-start;">
+  <!-- Today's Plan Card (left-aligned) -->
+  <div style="min-width: 260px; margin-right: 48px;">
     <h3>Today's Plan</h3>
     {% if today %}
       <form method="post" action="{{ url_for('main.toggle_item') }}">
@@ -13,18 +12,30 @@
         <input type="hidden" name="day_id" value="{{ today.id }}">
         <ul style="list-style: none; padding: 0;">
           {% for item in today.items %}
-            <li style="margin-bottom: 10px;">
-              <span>
+            <li style="margin-bottom: 18px;">
+              <span style="margin-bottom: 6px;">
                 {{ item.name }}
                 {% if item.sets %}- {{ item.sets }} sets{% endif %}
                 {% if item.reps %} x {{ item.reps }} reps{% endif %}
                 {% if item.minutes %}- {{ item.minutes }} min{% endif %}
               </span>
-              <button type="submit" name="item_index" value="{{ loop.index0 }}"
-                style="margin-left: 10px;"
-                {% if item.completed %}disabled{% endif %}>
-                {% if item.completed %}✓{% else %}Tick{% endif %}
-              </button>
+              <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                <div style="margin-top: 10px;">
+                  {% if item.name in media_links %}
+                    {% set url = media_links[item.name] %}
+                    {% if "youtube.com" in url or "youtu.be" in url %}
+                      <iframe class="responsive-media" src="{{ url }}" allowfullscreen></iframe>
+                    {% else %}
+                      <img class="responsive-media" src="{{ url }}" alt="{{ item.name }} tutorial">
+                    {% endif %}
+                  {% endif %}
+                </div>
+                <button type="submit" name="item_index" value="{{ loop.index0 }}"
+                  style="min-width: 220px; max-width: 260px; background: #113322; color: #fff; font-size: 1.1em; padding: 8px 0; border-radius: 6px; border: none; margin: 16px 0 0 0;"
+                  {% if item.completed %}disabled{% endif %}>
+                  {% if item.completed %}Finished ✓{% else %}Complete{% endif %}
+                </button>
+              </div>
             </li>
           {% endfor %}
         </ul>
@@ -34,56 +45,59 @@
     {% endif %}
   </div>
 
-  <!-- Workout Plan Table -->
-  <div style="flex: 1;">
-    {% if days %}
-      <table border="1" style="text-align:center;">
-        <tr>
-          <th>Day</th>
-          {% for i in range(days[0].items|length) %}
-            <th>ex {{ i+1 }}</th>
-          {% endfor %}
-          <th>Contribution</th>
-        </tr>
-        {% set max_items = days[0].items|length %}
-        {% for day in days %}
+  <!-- Workout Plan Table (centered) 
+  <div style="flex: 1; display: flex; justify-content: center;">
+    <div style="max-width: 900px; width: 100%;">
+      {% if days %}
+        <table border="1" style="text-align:center; margin: 0 auto;">
           <tr>
-            <td>{{ day.day_index + 1 }}</td>
-            {% for item in day.items %}
-              {% set color = "" %}
-              {% if day.day_index == day_index %}
-                {% if item.completed %} {% set color = "green" %}
-                {% else %} {% set color = "orange" %}
-                {% endif %}
-              {% elif day.day_index < day_index %}
-                {% if item.completed %} {% set color = "green" %}
-                {% else %} {% set color = "red" %}
-                {% endif %}
-              {% else %}
-                {% set color = "" %}
-              {% endif %}
-              <td style="color:{{ color }}">
-                {{ item.name }}
-              </td>
+            <th>Day</th>
+            {% for i in range(days[0].items|length) %}
+              <th>ex {{ i+1 }}</th>
             {% endfor %}
-            {# Pad with empty cells if this day has fewer items #}
-            {% for i in range(max_items - day.items|length) %}
-              <td></td>
-            {% endfor %}
-            {% set completed = day.items | selectattr('completed') | select | list | length %}
-            {% set total = day.items | length %}
-            {% set percent = (completed / total * 100) | round(0, 'floor') %}
-            {% set lightness = 97 - (percent * 0.45) %}
-            {% set contrib_color = "hsl(100, 80%, " ~ lightness|string ~ "%)" %}
-            <td style="background: {{ contrib_color }};">
-              {{ percent }}%
-            </td>
+            <th>Contribution</th>
           </tr>
-        {% endfor %}
-      </table>
-    {% else %}
-      <p>No workout plan for today. Create one <a href="{{ url_for('main.planner') }}">here</a>.</p>
-    {% endif %}
+          {% set max_items = days[0].items|length %}
+          {% for day in days %}
+            <tr>
+              <td>{{ day.day_index + 1 }}</td>
+              {% for item in day.items %}
+                {% set color = "" %}
+                {% if day.day_index == day_index %}
+                  {% if item.completed %} {% set color = "green" %}
+                  {% else %} {% set color = "orange" %}
+                  {% endif %}
+                {% elif day.day_index < day_index %}
+                  {% if item.completed %} {% set color = "green" %}
+                  {% else %} {% set color = "red" %}
+                  {% endif %}
+                {% else %}
+                  {% set color = "" %}
+                {% endif %}
+                <td style="color:{{ color }}">
+                  {{ item.name }}
+                </td>
+              {% endfor %}
+              {# Pad with empty cells if this day has fewer items #}
+              {% for i in range(max_items - day.items|length) %}
+                <td></td>
+              {% endfor %}
+              {% set completed = day.items | selectattr('completed') | select | list | length %}
+              {% set total = day.items | length %}
+              {% set percent = (completed / total * 100) | round(0, 'floor') %}
+              {% set lightness = 97 - (percent * 0.45) %}
+              {% set contrib_color = "hsl(100, 80%, " ~ lightness|string ~ "%)" %}
+              <td style="background: {{ contrib_color }};">
+                {{ percent }}%
+              </td>
+            </tr>
+          {% endfor %}
+        </table>
+      {% else %}
+        <p>No workout plan for today. Create one <a href="{{ url_for('main.planner') }}">here</a>.</p>
+      {% endif %}
+    </div>
   </div>
+  -->
 </div>
 {% endblock %}

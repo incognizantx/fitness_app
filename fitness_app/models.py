@@ -15,6 +15,11 @@ class User(UserMixin, db.Model):
     height_cm = db.Column(db.Float)
     weight_kg = db.Column(db.Float)
     gender = db.Column(db.String(10))  # "Male" / "Female"
+    fitness_level = db.Column(db.String(20), default="Intermediate")  # "Beginner", "Intermediate", "Advanced"
+    previous_success_rate = db.Column(db.Float, default=0.7)
+    previous_goal = db.Column(db.String(20), default="Weight Loss")   # "Weight Loss", "Muscle Gain", "Endurance"
+    user_rating = db.Column(db.Float, default=4.0)
+    plan_adherence_rate = db.Column(db.Float, default=0.8)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def set_password(self, password: str):
