@@ -62,30 +62,18 @@ def planner():
 
     return render_template("main/planner.html", form=form, bg_image="backgrounds/planner.jpg")  # ✅ pass form
 
-@main_bp.route("/toggle_item", methods=["POST"])
+@main_bp.route('/toggle_item', methods=['POST'])
 @login_required
 def toggle_item():
-    day_id = request.form.get("day_id")
-    item_index = request.form.get("item_index", type=int)
-    if not day_id or item_index is None:
-        flash("Invalid request.", "danger")
-        return redirect(url_for("main.dashboard"))
-
-    day = WorkoutDay.query.filter_by(id=day_id).first()
-    if not day or day.plan.user_id != current_user.id:
-        flash("Not authorized.", "danger")
-        return redirect(url_for("main.dashboard"))
-
-    # Mark the item as completed
-    items = day.items
-    if 0 <= item_index < len(items):
-        items[item_index]["completed"] = True
-        day.items = items  # Assign back to trigger SQLAlchemy change tracking
-        flag_modified(day, "items")
+    day_id = request.form.get('day_id')
+    item_index = int(request.form.get('item_index'))
+    day = WorkoutDay.query.get(day_id)
+    if day and 0 <= item_index < len(day.items):
+        items = day.items
+        items[item_index]['completed'] = True
+        day.items = items
+        flag_modified(day, "items")  # <-- Add this line
         db.session.commit()
-        flash("Exercise marked as completed!", "success")
-        
-    else:
-        flash("Invalid exercise index.", "danger")
-
-    return redirect(url_for("main.dashboard"))
+        all_completed = all(item.get('completed') for item in day.items)
+        return jsonify(success=True, all_completed=all_completed)
+    return jsonify(success=False), 400

@@ -1,26 +1,29 @@
 {% extends "base.html" %}
 {% block title %}Dashboard · Fitness App{% endblock %}
 {% block content %}
-<h2>Workout Plan Overview</h2>
-<div style="display: flex; align-items: flex-start;">
-  <!-- Today's Plan Card (left-aligned) -->
-  <div style="min-width: 260px; margin-right: 48px;">
+<h1>Workout Plan Overview</h1>
+<div style="display: flex; align-items: flex-start; flex-direction: column;">
+  <!-- Today's Plan Card (centered) -->
+  <div style="max-width: 600px; margin: 0 auto 32px auto;">
     <h3>Today's Plan</h3>
     {% if today %}
-      <form method="post" action="{{ url_for('main.toggle_item') }}">
+      <form method="post" action="{{ url_for('main.toggle_item') }}" onsubmit="return false;">
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <input type="hidden" name="day_id" value="{{ today.id }}">
         <ul style="list-style: none; padding: 0;">
           {% for item in today.items %}
             <li style="margin-bottom: 18px;">
-              <span style="margin-bottom: 6px;">
-                {{ item.name }}
-                {% if item.sets %}- {{ item.sets }} sets{% endif %}
-                {% if item.reps %} x {{ item.reps }} reps{% endif %}
-                {% if item.minutes %}- {{ item.minutes }} min{% endif %}
-              </span>
-              <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
-                <div style="margin-top: 10px;">
+              <div style="display: flex; align-items: center; cursor: pointer;" onclick="toggleItem('item-{{ loop.index0 }}')">
+                <span style="font-size: 1.5em; margin-right: 10px;">&#8250;</span>
+                <span>
+                  {{ item.name }}
+                  {% if item.sets %}- {{ item.sets }} sets{% endif %}
+                  {% if item.reps %} x {{ item.reps }} reps{% endif %}
+                  {% if item.minutes %}- {{ item.minutes }} min{% endif %}
+                </span>
+              </div>
+              <div id="item-{{ loop.index0 }}" class="collapsible-content">
+                <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
                   {% if item.name in media_links %}
                     {% set url = media_links[item.name] %}
                     {% if "youtube.com" in url or "youtu.be" in url %}
@@ -29,12 +32,13 @@
                       <img class="responsive-media" src="{{ url }}" alt="{{ item.name }} tutorial">
                     {% endif %}
                   {% endif %}
+                  <button type="button"
+                    class="complete-btn"
+                    data-index="{{ loop.index0 }}"
+                    {% if item.completed %}disabled{% endif %}>
+                    {% if item.completed %}Finished ✓{% else %}Complete{% endif %}
+                  </button>
                 </div>
-                <button type="submit" name="item_index" value="{{ loop.index0 }}"
-                  style="min-width: 220px; max-width: 260px; background: #113322; color: #fff; font-size: 1.1em; padding: 8px 0; border-radius: 6px; border: none; margin: 16px 0 0 0;"
-                  {% if item.completed %}disabled{% endif %}>
-                  {% if item.completed %}Finished ✓{% else %}Complete{% endif %}
-                </button>
               </div>
             </li>
           {% endfor %}
@@ -44,60 +48,184 @@
       <p>No workout plan for today.</p>
     {% endif %}
   </div>
-
-  <!-- Workout Plan Table (centered) 
-  <div style="flex: 1; display: flex; justify-content: center;">
-    <div style="max-width: 900px; width: 100%;">
-      {% if days %}
-        <table border="1" style="text-align:center; margin: 0 auto;">
-          <tr>
-            <th>Day</th>
-            {% for i in range(days[0].items|length) %}
-              <th>ex {{ i+1 }}</th>
-            {% endfor %}
-            <th>Contribution</th>
-          </tr>
-          {% set max_items = days[0].items|length %}
-          {% for day in days %}
-            <tr>
-              <td>{{ day.day_index + 1 }}</td>
-              {% for item in day.items %}
-                {% set color = "" %}
-                {% if day.day_index == day_index %}
-                  {% if item.completed %} {% set color = "green" %}
-                  {% else %} {% set color = "orange" %}
+  {% set all_completed = today and today.items|selectattr('completed')|select|list|length == today.items|length %}
+  <div id="all-completed-message" style="display: {% if all_completed %}block{% else %}none{% endif %}; margin-bottom: 1em;">
+    All tasks for today are completed! Great job!
+    <h3>Workout Plan</h3>
+  </div>
+  <div id="workout-table-container" style="display: {% if all_completed %}block{% else %}none{% endif %};">
+    <div style="display: flex; justify-content: center;">
+      <div style="max-width: 900px; width: 100%;">
+        {% if days %}
+          <div style="overflow-x: auto; width: 100%;">
+            <table border="1" lang="en" style="text-align:center; margin: 0 auto; width: 100%;">
+              <tr>
+                <th style="width: 23px;">Day</th>
+                {% for i in range(days[0].items|length) %}
+                  <th>ex {{ i+1 }}</th>
+                {% endfor %}
+                <th>Contribution</th>
+              </tr>
+              {% set max_items = days[0].items|length %}
+              {% for day in days %}
+                <tr>
+                  <td>{{ day.day_index + 1 }}</td>
+                  {% for item in day.items %}
+                    {% set color = "" %}
+                    {% if day.day_index == day_index %}
+                        {% set color = "green" %}
+                    {% elif day.day_index < day_index %}
+                      {% if item.completed %} {% set color = "green" %}
+                      {% else %} {% set color = "red" %}
+                      {% endif %}
+                    {% else %}
+                      {% set color = "" %}
+                    {% endif %}
+                    <td style="color:{{ color }}">
+                      {{ item.name }}
+                    </td>
+                  {% endfor %}
+                  {# Pad with empty cells if this day has fewer items #}
+                  {% for i in range(max_items - day.items|length) %}
+                    <td></td>
+                  {% endfor %}
+                  {% set completed = day.items | selectattr('completed') | select | list | length %}
+                  {% set total = day.items | length %}
+                  {% if day.day_index == day_index %}
+                    {% set percent = 100 %}
+                  {% else %}
+                    {% set percent = (completed / total * 100) | round(0, 'floor') %}
                   {% endif %}
-                {% elif day.day_index < day_index %}
-                  {% if item.completed %} {% set color = "green" %}
-                  {% else %} {% set color = "red" %}
-                  {% endif %}
-                {% else %}
-                  {% set color = "" %}
-                {% endif %}
-                <td style="color:{{ color }}">
-                  {{ item.name }}
-                </td>
+                  {% set lightness = 97 - (percent * 0.45) %}
+                  {% set contrib_color = "hsl(100, 80%, " ~ lightness|string ~ "%)" %}
+                  <td class="progress-cell"
+                      style="background: linear-gradient(to right, {{ contrib_color }} {{ percent }}%, transparent {{ percent }}%); position: relative;">
+                    <span class="progress-bar-text">{{ percent }}%</span>
+                  </td>
+                </tr>
               {% endfor %}
-              {# Pad with empty cells if this day has fewer items #}
-              {% for i in range(max_items - day.items|length) %}
-                <td></td>
-              {% endfor %}
-              {% set completed = day.items | selectattr('completed') | select | list | length %}
-              {% set total = day.items | length %}
-              {% set percent = (completed / total * 100) | round(0, 'floor') %}
-              {% set lightness = 97 - (percent * 0.45) %}
-              {% set contrib_color = "hsl(100, 80%, " ~ lightness|string ~ "%)" %}
-              <td style="background: {{ contrib_color }};">
-                {{ percent }}%
-              </td>
-            </tr>
-          {% endfor %}
-        </table>
-      {% else %}
-        <p>No workout plan for today. Create one <a href="{{ url_for('main.planner') }}">here</a>.</p>
-      {% endif %}
+            </table>
+          </div>
+        {% else %}
+          <p>No workout plan for today. Create one <a href="{{ url_for('main.planner') }}">here</a>.</p>
+        {% endif %}
+      </div>
     </div>
   </div>
-  -->
 </div>
+
+<script>
+function toggleItem(id) {
+  var el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.complete-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(event) {
+      event.preventDefault(); // Prevent form submission
+      const itemIndex = btn.getAttribute('data-index');
+      const dayId = "{{ today.id }}";
+      const csrfToken = "{{ csrf_token }}";
+      fetch("{{ url_for('main.toggle_item') }}", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "X-CSRFToken": csrfToken
+        },
+        body: `item_index=${itemIndex}&day_id=${dayId}&csrf_token=${csrfToken}`
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          btn.textContent = "Finished ✓";
+          btn.disabled = true;
+
+          if (data.all_completed) {
+            document.getElementById('all-completed-message').style.display = 'block';
+            document.getElementById('workout-table-container').style.display = 'block';
+            // Collapse all open items
+            document.querySelectorAll('.collapsible-content.open').forEach(function(el) {
+              el.classList.remove('open');
+            });
+          }
+        }
+      });
+    });
+  });
+});
+</script>
+
+<style>
+  .collapsible-content {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s cubic-bezier(.4,0,.2,1), opacity 0.3s;
+}
+
+.collapsible-content.open {
+  max-height: 800px; /* large enough for your content */
+  opacity: 1;
+}
+
+.progress-cell {
+  padding: 0 !important;
+  position: relative;
+  text-align: center;
+  color: #0a1a3a;
+  font-weight: bold;
+  font-size: 1em;
+  height: 28px;
+  min-width: 70px;
+  /* Remove background and border-radius here */
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 28px;
+  background: transparent;
+  border-radius: 0;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 0;
+  transition: width 0.4s;
+  display: block;
+}
+
+.progress-bar-text {
+  position: center;
+  width: 100%;
+  left: 0;
+  top: 0;
+  line-height: 28px;
+  pointer-events: none;
+  color: blue;
+  letter-spacing: 1px;
+  font-weight: bold;
+  font-size: 1em;
+}
+
+@media (max-width: 750px) {
+  table {
+    font-size: 0.85em;
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed;
+  }
+  th, td {
+    padding: 3px 2px;
+    word-break: break-word;
+    white-space: normal;
+    hyphens: auto;
+  }
+}
+</style>
 {% endblock %}
