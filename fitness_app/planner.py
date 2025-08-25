@@ -35,12 +35,12 @@ MEDIA_LINKS = {
     "Plank": "https://www.youtube.com/embed/mwlp75MS6Rg",
     "Rower easy": "https://www.youtube.com/embed/0R9ZQd3aM6s",
     "Incline walk": "https://liftmanual.com/wp-content/uploads/2023/04/walking-on-incline-treadmill.jpg",
-    "Steady run": "https://www.youtube.com/embed/VIDEO_ID16",
-    "Tempo run": "https://www.youtube.com/embed/VIDEO_ID17",
-    "Cycling": "https://www.youtube.com/embed/VIDEO_ID18",
-    "Elliptical": "https://www.youtube.com/embed/VIDEO_ID19",
-    "Stair climber": "https://www.youtube.com/embed/VIDEO_ID20",
-    "Swim": "https://www.youtube.com/embed/VIDEO_ID21"
+    "Steady run": "https://sunriserunco.com/wp-content/uploads/2021/09/Steady-State-Running-featured-image.jpg",
+    "Tempo run": "https://i0.wp.com/post.healthline.com/wp-content/uploads/2020/01/Runner-training-on-running-track-1296x728-header-1296x728.jpg?w=1155&h=1528",
+    "Cycling": "https://cdn.mos.cms.futurecdn.net/v2/t:139,l:0,cw:2700,ch:1518,q:80,w:2700/WXZQnTcQHyt2igzrwhNUyW.jpg",
+    "Elliptical": "https://shop.lifefitness.com/cdn/shop/products/life-fitness-e5-adjustable-stride-elliptical-cross-trainer-woman-1000x1000.jpg?v=1748945400&width=1000",
+    "Stair climber": "https://assets.clevelandclinic.org/transform/LargeFeatureImage/30ac4994-09bb-4ebd-b114-46d1af479237/stair-stepper-gym-1474835659-r",
+    "Swim": "https://www.swimnow.co.uk/wp-content/uploads/2023/05/Health-Benefits-of-Swimming.jpg"
 }
 def bmi_from_profile(u: User) -> float | None:
     if not (u.height_cm and u.weight_kg):
