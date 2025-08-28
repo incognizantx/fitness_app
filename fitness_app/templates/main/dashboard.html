@@ -45,7 +45,7 @@
         </ul>
       </form>
     {% else %}
-      <p>No workout plan for today.</p>
+      <p>No workout plan for today. Create one <a href="{{ url_for('main.planner') }}">here</a></p>
     {% endif %}
   </div>
   {% set all_completed = today and today.items|selectattr('completed')|select|list|length == today.items|length %}
@@ -53,12 +53,12 @@
     All tasks for today are completed! Great job!
     <h3>Workout Plan</h3>
   </div>
-  <div id="workout-table-container" style="display: {% if all_completed %}block{% else %}none{% endif %};">
+  <div id="workout-table-container">
     <div style="display: flex; justify-content: center;">
       <div style="max-width: 900px; width: 100%;">
         {% if days %}
           <div style="overflow-x: auto; width: 100%;">
-            <table border="1" lang="en" style="text-align:center; margin: 0 auto; width: 100%;">
+            <table border="1" lang="en" style="text-align:center; margin: 0 auto; width: 100%; background: rgba(0,0,0,0.5) border-radius: 10px;">
               <tr>
                 <th style="width: 23px;">Day</th>
                 {% for i in range(days[0].items|length) %}
@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
   top: 0;
   line-height: 28px;
   pointer-events: none;
-  color: blue;
+  color: rgb(255, 60, 12);
   letter-spacing: 1px;
   font-weight: bold;
   font-size: 1em;
@@ -227,5 +227,7 @@ document.addEventListener('DOMContentLoaded', function() {
     hyphens: auto;
   }
 }
+
+
 </style>
 {% endblock %}

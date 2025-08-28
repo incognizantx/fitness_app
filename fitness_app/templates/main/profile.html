@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Profile for {{ user.username }}</h2>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <div class="form-group" style="margin-bottom: 10px;">
+            {{ form.email.label }}
+            {{ form.email(class="form-control", value=user.email) }}
+        </div>
+        <div class="form-group" style="margin-bottom: 10px;">
+            {{ form.password.label }}
+            {{ form.password(class="form-control") }}
+        </div>
+        <div class="form-group" style="margin-bottom: 10px;">
+            {{ form.confirm.label }}
+            {{ form.confirm(class="form-control") }}
+        </div>
+        <div class="form-group" style="margin-bottom: 10px;">
+            {{ form.age.label }}
+            {{ form.age(class="form-control", value=user.age) }}
+        </div>
+        <div class="form-group">
+            <label for="height-slider">Height - </label>
+            <output id="height-value">{{ user.height_cm or 170 }}</output> cm
+            <input type="range" min="100" max="230" step="1" name="height_cm" id="height-slider" value="{{ user.height_cm or 170 }}" oninput="document.getElementById('height-value').value = this.value">
+        </div>
+        <div class="form-group">
+            <label for="weight-slider">Weight - </label>
+            <output id="weight-value">{{ user.weight_kg or 70 }}</output> kg
+            <input type="range" min="30" max="250" step="1" name="weight_kg" id="weight-slider" value="{{ user.weight_kg or 70 }}" oninput="document.getElementById('weight-value').value = this.value">
+        </div>
+        <div class="form-group mt-3">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</div>
+<script>
+    // Keep output values in sync with sliders on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('age-value').value = document.getElementById('age-slider').value;
+        document.getElementById('height-value').value = document.getElementById('height-slider').value;
+        document.getElementById('weight-value').value = document.getElementById('weight-slider').value;
+    });
+</script>
+{% endblock %}

@@ -1,22 +1,24 @@
 {% extends "base.html" %}
 {% block title %}Login · Fitness App{% endblock %}
 {% block content %}
+<link rel ="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <h2>Log in</h2>
 <form method="post">
   {{ form.hidden_tag() }}
-
-  <label>Username or Email</label>
-  {{ form.identifier(class="input") }}
-
-  <label>Password</label>
-  {{ form.password(class="input") }}
-
+  <div class="form-group" style="margin-bottom: 10px;">
+    <label>Username or Email</label>
+    {{ form.identifier(class="input") }}
+  </div>
+  <div class="form-group" style="margin-bottom: 10px;">
+    <label>Password</label>
+    {{ form.password(class="input") }}
+  </div>
   <div style="margin: 10px 0; display: flex; align-items: center;">
     {{ form.remember(style="width:auto; margin-right:8px;") }}
     <label for="remember">Remember me</label>
   </div>
-
   {{ form.submit(class="btn") }}
 </form>
-<p style="margin-top:10px">No account? <a href="{{ url_for('auth.register') }}">Create one</a></p>
+<p style="margin-top:10px">No account? <a href="{{ url_for('auth.register') }}" class="hyperlink">Create one</a></p>
 {% endblock %}
+

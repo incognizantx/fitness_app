@@ -30,3 +30,13 @@ class WorkoutPlanForm(FlaskForm):
     goal = StringField("Goal", validators=[Optional()])
     days = IntegerField("Duration", validators=[Optional(), NumberRange(1,56)])
     submit = SubmitField("Create Plan")
+
+# ProfileForm moved from forms_profile.py
+class ProfileForm(FlaskForm):
+    email = StringField("Email", validators=[DataRequired(), Email(), Length(max=120)])
+    password = PasswordField("New Password", validators=[Optional(), Length(6, 128)])
+    confirm = PasswordField("Confirm Password", validators=[Optional(), EqualTo("password")])
+    age = IntegerField("Age", validators=[Optional(), NumberRange(12, 80)])
+    height_cm = FloatField("Height (cm)", validators=[Optional(), NumberRange(100, 230)])
+    weight_kg = FloatField("Weight (kg)", validators=[Optional(), NumberRange(30, 250)])
+    submit = SubmitField("Update Profile")

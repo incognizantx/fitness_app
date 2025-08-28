@@ -1,12 +1,40 @@
 from flask import Blueprint, render_template, request, redirect, url_for, jsonify, flash
 from flask_login import login_required, current_user
 from fitness_app.models import User, db, WorkoutPlan, WorkoutDay, WorkoutLog
-from fitness_app.forms import WorkoutPlanForm
+from fitness_app.forms import WorkoutPlanForm, ProfileForm
 from fitness_app.planner import generate_plan_for_user, get_today_for_user
 from datetime import date
 from sqlalchemy.orm.attributes import flag_modified
 from fitness_app.planner import MEDIA_LINKS
 main_bp = Blueprint("main", __name__, url_prefix="")
+@main_bp.route("/profile", methods=["GET", "POST"])
+@login_required
+def profile():
+    form = ProfileForm(obj=current_user)
+    if form.validate_on_submit():
+        updated = False
+        if form.email.data and form.email.data != current_user.email:
+            current_user.email = form.email.data
+            updated = True
+        if form.password.data:
+            current_user.set_password(form.password.data)
+            updated = True
+        if form.age.data is not None:
+            current_user.age = form.age.data
+            updated = True
+        if form.height_cm.data is not None:
+            current_user.height_cm = form.height_cm.data
+            updated = True
+        if form.weight_kg.data is not None:
+            current_user.weight_kg = form.weight_kg.data
+            updated = True
+        if updated:
+            db.session.commit()
+            flash("Profile updated successfully!", "success")
+        else:
+            flash("No changes made.", "info")
+        return redirect(url_for("main.profile"))
+    return render_template("main/profile.html", form=form, user=current_user, bg_image="backgrounds/dashboard.jpg")
 
 @main_bp.route("/")
 def index():

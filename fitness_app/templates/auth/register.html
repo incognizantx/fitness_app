@@ -1,46 +1,64 @@
 {% extends "base.html" %}
 {% block title %}Register · Fitness App{% endblock %}
 {% block content %}
+<link rel ="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 <h2>Create account</h2>
 <form method="post">
   {{ form.hidden_tag() }}
 
+  <div style = "margin-bottom: 10px;">
   <label>Username</label>
   {{ form.username(class="input") }}
+  </div>
 
+  <div style = "margin-bottom: 10px;">
   <label>Email</label>
   {{ form.email(class="input") }}
+  </div>
 
+  <div style = "margin-bottom: 10px;">
   <label>Password</label>
   {{ form.password(class="input") }}
+  </div>
 
+  <div style = "margin-bottom: 10px;">
   <label>Confirm Password</label>
   {{ form.confirm(class="input") }}
+  </div>
 
-  <div style="margin-top:10px"></div>
+  <div style="margin-bottom:10px">
   <label>Age</label>
   {{ form.age(class="input") }}
+  </div>
 
+  <div style="margin-bottom: 10px;">
   <label>Height (cm):</label>
-  <output id="heightValue" style="margin-left:10px;">170</output><br>
+  <output id="heightValue" style="margin-left:5px;">170</output><br>
   <input type="range" min="130" max="210" step="1" name="height_cm" id="height_cm_slider" value="170" class="input" oninput="heightValue.value = height_cm_slider.value">
-  
+  </div>
+
+  <div style="margin-bottom: 10px;">
   <label>Weight (kg):</label>
-  <output id="weightValue" style="margin-left:10px;">70</output><br>
+  <output id="weightValue" style="margin-left:5px;">70</output><br>
   <input type="range" min="130" max="210" step="1" name="weight_kg" id="weight_kg_slider" value="40" class="input" oninput="weightValue.value = weight_kg_slider.value">
 
+  <div style="margin-bottom: 10px;">
   <label>Gender</label>
   {{ form.gender(class="input") }}
+  </div>
 
-
+  <div style="margin-bottom: 10px;">
   <label>What is your fitness level?</label>
   {{ form.fitness_level(class="input") }}
+  </div>
 
+  <div style="margin-bottom: 10px;">
   <label>What was your goal for fitness?</label>
   {{ form.previous_goal(class="input") }}
+  </div>
 
 
   {{ form.submit(class="btn") }}
 </form>
-<p style="margin-top:10px">Already have an account? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+<p style="margin-top:10px">Already have an account? <a href="{{ url_for('auth.login') }}" class="hyperlink">Log in</a></p>
 {% endblock %}
