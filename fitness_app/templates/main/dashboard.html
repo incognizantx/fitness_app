@@ -32,14 +32,15 @@
                       <img class="responsive-media" src="{{ url }}" alt="{{ item.name }} tutorial">
                     {% endif %}
                   {% endif %}
+                  </div>
+              </div>
                   <button type="button"
                     class="complete-btn"
                     data-index="{{ loop.index0 }}"
                     {% if item.completed %}disabled{% endif %}>
                     {% if item.completed %}Finished ✓{% else %}Complete{% endif %}
                   </button>
-                </div>
-              </div>
+                
             </li>
           {% endfor %}
         </ul>
@@ -53,7 +54,7 @@
     All tasks for today are completed! Great job!
     <h3>Workout Plan</h3>
   </div>
-  <div id="workout-table-container">
+  <div id="workout-table-container" style="display: {% if all_completed %}block{% else %}none{% endif %};">
     <div style="display: flex; justify-content: center;">
       <div style="max-width: 900px; width: 100%;">
         {% if days %}

@@ -66,12 +66,12 @@ def dashboard():
 @main_bp.route("/admin")
 @login_required
 def admin_dashboard():
-    users = User.query.all()
+    users = User.query.limit(10).all()
     if not current_user.is_admin:  
         # Non-admins → show access denied page
         return render_template("access_denied.html"), 403
 
-    return render_template("admin_dashboard.html", users=users)
+    return render_template("admin_dashboard.html", users=users, bg_image="backgrounds/admin.jpg")
 
 @main_bp.route("/planner", methods=["GET", "POST"])
 @login_required

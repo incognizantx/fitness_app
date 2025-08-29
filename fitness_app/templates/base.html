@@ -20,9 +20,9 @@
     </select>
   </div>
 -->
-  <nav style="margin-top:8px">
+  <nav style="margin-top:8px; width: 100%; display: flex; align-items: center; justify-content: center;">
     {% if current_user.is_authenticated %}
-  <span>Hi, <a href="{{ url_for('main.profile') }}" style="color:#fff; text-decoration:underline">{{ current_user.username }}</a>!</span>
+      Hi, <a href="{{ url_for('main.profile') }}" style="color:#fff; text-decoration:underline">{{ current_user.username }}</a>
       &nbsp;|&nbsp; <a href="{{ url_for('main.dashboard') }}" style="color:#fff">Dashboard</a>
       &nbsp;|&nbsp; <a href="{{ url_for('main.planner') }}" style="color:#fff">Planner</a>
       &nbsp;|&nbsp; <a href="{{ url_for('auth.logout') }}" style="color:#fff">Logout</a>

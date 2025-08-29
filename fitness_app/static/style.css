@@ -1,7 +1,7 @@
 :root {
   --primary-color: #123524;
   --secondary-color: #ffffff;
-  --accent-color: #17442eff;
+  --accent-color: rgb(23, 68, 46);
 }
 
 body { font-family: Arial, sans-serif; background: var(--secondary-color); margin:0; color: whitesmoke; }
@@ -51,7 +51,25 @@ button:hover { background: var(--accent-color); }
     font-size: 1em;
     display: block;
     margin: 0;
+    white-space: nowrap;
   }
+  .username-greeting {
+    white-space: nowrap;
+    display: inline-block;
+  }
+}
+
+nav {
+  display: flex;
+  flex-wrap: nowrap;         /* Prevent wrapping */
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;          /* Allow horizontal scroll if needed */
+}
+nav .username-greeting,
+nav a {
+  white-space: nowrap;
+  flex-shrink: 0;            /* Prevent shrinking */
 }
 
 .flash { padding:10px; border-radius:6px; margin-bottom:8px; }
@@ -88,83 +106,23 @@ button:hover { background: var(--accent-color); }
 }
 
 .hyperlink {
-  background: rgba(0,0,0,0.3);
-  border-radius: 5%;
-  color: rgb(46, 49, 255);
+  color: wheat;
 }
 
-/* Responsive Table Styles for Dashboard */
-#workout-table-container table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  background: rgba(255,255,255,0.85);
-  border-radius: 10px;
-  box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);
-  font-family: 'Lato', sans-serif;
-  margin-bottom: 25px;
-  overflow: hidden;
+input{
+  background: rgba(23,68,46,0.3);
+  color: white;
 }
-#workout-table-container th, #workout-table-container td {
-  padding: 18px 16px;
-  border: none;
-  text-align: center;
-  font-size: 1em;
+select {
+  background-color: #111;
+  color: white;
 }
-#workout-table-container th {
-  background-color: #95A5A6;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  font-size: 14px;
+.complete-btn {
+  background: rgba(23,68,46,0.5);
+  color: white;
 }
-#workout-table-container tr {
-  background-color: #fff;
-  border-radius: 3px;
-  margin-bottom: 25px;
-  box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);
+input[type=range]{
+  accent-color: var(--accent-color);
 }
-#workout-table-container tr:nth-child(even) {
-  background-color: #f7f7f7;
-}
-#workout-table-container td {
-  color: #222;
-}
-#workout-table-container td[colspan] {
-  background: none;
-}
-#workout-table-container .progress-cell {
-  padding: 0 !important;
-  background: none !important;
-}
-@media all and (max-width: 767px) {
-  #workout-table-container table, #workout-table-container thead, #workout-table-container tbody, #workout-table-container th, #workout-table-container td, #workout-table-container tr {
-    display: block;
-    width: 100%;
-  }
-  #workout-table-container thead {
-    display: none;
-  }
-  #workout-table-container tr {
-    margin-bottom: 25px;
-    box-shadow: 0px 0px 9px 0px rgba(0,0,0,0.1);
-  }
-  #workout-table-container td {
-    padding: 10px 0;
-    position: relative;
-    text-align: right;
-    border: none;
-    background: #fff;
-  }
-  #workout-table-container td:before {
-    content: attr(data-label);
-    color: #6C7A89;
-    position: absolute;
-    left: 0;
-    width: 50%;
-    padding-left: 16px;
-    text-align: left;
-    font-weight: bold;
-  }
-}
+
 

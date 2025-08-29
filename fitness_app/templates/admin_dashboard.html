@@ -1,31 +1,88 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
+<div class="admin-dashboard-page">
   <h2>Admin Dashboard</h2>
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Username</th>
-        <th>Email</th>
-        <th>Admin</th>
-        <th>Age</th>
-        <th>Height</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for user in users %}
-      <tr>
-        <td>{{ user.id }}</td>
-        <td>{{ user.username }}</td>
-        <td>{{ user.email }}</td>
-        <td>{{ "Yes" if user.is_admin else "No" }}</td>
-        <td>{{user.age}}</td>
-        <td>{{user.height_cm}}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="admin-section">
+    <div class="admin-section-header" onclick="toggleAdminSection(this)">
+      <span style="font-size:1.2em; font-weight:bold; cursor:pointer; user-select:none;">&#8250; User Management</span>
+    </div>
+    <div class="admin-section-content" style="display:none;">
+      <input type="text" id="user-search" placeholder="Search by username or email..." style="width: 100%; margin-bottom: 16px; padding: 8px; border-radius: 5px; border: 1px solid #ccc;">
+      <table class="table table-striped" id="users-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Admin</th>
+            <th>Age</th>
+            <th>Height</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for user in users %}
+          <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ "Yes" if user.is_admin else "No" }}</td>
+            <td>{{user.age}}</td>
+            <td>{{user.height_cm}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
+<script>
+function toggleAdminSection(header) {
+  const content = header.nextElementSibling;
+  const chevron = header.querySelector('span');
+  if (content.style.display === 'none') {
+    content.style.display = 'block';
+    chevron.innerHTML = '&#9660; User Management';
+  } else {
+    content.style.display = 'none';
+    chevron.innerHTML = '&#8250; User Management';
+  }
+}
+// Simple client-side filter for the user table
+const searchInput = document.getElementById('user-search');
+const table = document.getElementById('users-table');
+if (searchInput && table) {
+  searchInput.addEventListener('input', function() {
+    const filter = this.value.toLowerCase();
+    for (const row of table.tBodies[0].rows) {
+      const username = row.cells[1].textContent.toLowerCase();
+      const email = row.cells[2].textContent.toLowerCase();
+      row.style.display = (username.includes(filter) || email.includes(filter)) ? '' : 'none';
+    }
+  });
+}
+</script>
+<style>
+.admin-section {
+  margin-bottom: 24px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  max-width: 900px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.admin-section-header { padding: 14px 18px; background: var(--primary-color, #17442e); color: #fff; border-radius: 8px 8px 0 0; }
+.admin-section-header span { transition: color 0.2s; }
+.admin-section-header:hover span { color: var(--accent-color, #2ecc40); }
+.admin-section-content {
+  padding: 18px;
+}
+.admin-dashboard-page {
+  max-width: 1500px; /* or any width you want */
+  width: 100%;
+  margin: 40px auto 0 auto;
+}
+</style>
 {% endblock %}
