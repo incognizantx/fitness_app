@@ -120,6 +120,7 @@ select {
 .complete-btn {
   background: rgba(23,68,46,0.5);
   color: white;
+  
 }
 input[type=range]{
   accent-color: var(--accent-color);

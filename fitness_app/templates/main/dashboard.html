@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Dashboard · Fitness App{% endblock %}
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
 <h1>Workout Plan Overview</h1>
 <div style="display: flex; align-items: flex-start; flex-direction: column;">
   <!-- Today's Plan Card (centered) -->
@@ -46,7 +47,7 @@
         </ul>
       </form>
     {% else %}
-      <p>No workout plan for today. Create one <a href="{{ url_for('main.planner') }}">here</a></p>
+      <p>No workout plan for today. Create one <a href="{{ url_for('main.planner') }}" class = "hyperlink">here</a></p>
     {% endif %}
   </div>
   {% set all_completed = today and today.items|selectattr('completed')|select|list|length == today.items|length %}
@@ -61,7 +62,7 @@
           <div style="overflow-x: auto; width: 100%;">
             <table border="1" lang="en" style="text-align:center; margin: 0 auto; width: 100%; background: rgba(0,0,0,0.5) border-radius: 10px;">
               <tr>
-                <th style="width: 23px;">Day</th>
+                <th style="width: 25px;">Day</th>
                 {% for i in range(days[0].items|length) %}
                   <th>ex {{ i+1 }}</th>
                 {% endfor %}
@@ -71,25 +72,32 @@
               {% for day in days %}
                 <tr>
                   <td>{{ day.day_index + 1 }}</td>
-                  {% for item in day.items %}
-                    {% set color = "" %}
-                    {% if day.day_index == day_index %}
-                        {% set color = "green" %}
-                    {% elif day.day_index < day_index %}
-                      {% if item.completed %} {% set color = "green" %}
-                      {% else %} {% set color = "red" %}
-                      {% endif %}
-                    {% else %}
-                      {% set color = "" %}
-                    {% endif %}
-                    <td style="color:{{ color }}">
-                      {{ item.name }}
+                  {% if day.day_index % 4 == 3 %}
+                    <td colspan="{{ max_items }}">
+                      Active Recovery Walk
                     </td>
-                  {% endfor %}
-                  {# Pad with empty cells if this day has fewer items #}
-                  {% for i in range(max_items - day.items|length) %}
-                    <td></td>
-                  {% endfor %}
+                  {% else %}
+                    {% for item in day.items %}
+                      {% set color = "" %}
+                      {% if day.day_index == day_index %}
+                          {% set color = "green" %}
+                      {% elif day.day_index < day_index %}
+                        {% if item.completed %} {% set color = "green" %}
+                        {% else %} {% set color = "red" %}
+                        {% endif %}
+                      {% else %}
+                        {% set color = "" %}
+                      {% endif %}
+                      <td style="color:{{ color }}">
+                        {{ item.name }}
+                      </td>
+                    {% endfor %}
+                    {# Pad with empty cells if this day has fewer items #}
+                    {% for i in range(max_items - day.items|length) %}
+                      <td></td>
+                    {% endfor %}
+                  {% endif %}
+                  {# Contribution cell as before #}
                   {% set completed = day.items | selectattr('completed') | select | list | length %}
                   {% set total = day.items | length %}
                   {% if day.day_index == day_index %}
@@ -98,7 +106,7 @@
                     {% set percent = (completed / total * 100) | round(0, 'floor') %}
                   {% endif %}
                   {% set lightness = 97 - (percent * 0.45) %}
-                  {% set contrib_color = "hsl(100, 80%, " ~ lightness|string ~ "%)" %}
+                  {% set contrib_color = "hsl(120, 75%, " ~ lightness|string ~ "%)" %}
                   <td class="progress-cell"
                       style="background: linear-gradient(to right, {{ contrib_color }} {{ percent }}%, transparent {{ percent }}%); position: relative;">
                     <span class="progress-bar-text">{{ percent }}%</span>
@@ -108,7 +116,7 @@
             </table>
           </div>
         {% else %}
-          <p>No workout plan for today. Create one <a href="{{ url_for('main.planner') }}">here</a>.</p>
+          <p>No workout plan for today. Create one <a href="{{ url_for('main.planner') }}" class="hyperlink">here</a>.</p>
         {% endif %}
       </div>
     </div>
@@ -174,7 +182,7 @@ document.addEventListener('DOMContentLoaded', function() {
   padding: 0 !important;
   position: relative;
   text-align: center;
-  color: #0a1a3a;
+  color: #34415a;
   font-weight: bold;
   font-size: 1em;
   height: 28px;
@@ -208,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
   top: 0;
   line-height: 28px;
   pointer-events: none;
-  color: rgb(255, 60, 12);
+  color: white;
   letter-spacing: 1px;
   font-weight: bold;
   font-size: 1em;
@@ -220,15 +228,33 @@ document.addEventListener('DOMContentLoaded', function() {
     width: 100% !important;
     min-width: 0 !important;
     table-layout: fixed;
+    background: rgba(23,68,46,0.3);
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #17442e;
   }
   th, td {
-    padding: 3px 2px;
     word-break: break-word;
     white-space: normal;
     hyphens: auto;
+    border: 1px solid #17442e; /* 2px border for cells */
+    padding: 8px 6px;
+    background: rgba(23,68,46,0.3);
+    border-radius: 5%;
   }
 }
 
+table {
+    background: rgba(23,68,46,0.2);
+    border-collapse: separate;
+    border: 0px solid #17442e;
+    border-radius: 1%;
+  }
+th, td {
+    border: 0.1px solid #17442e; /* 2px border for cells */
+    padding: 4px 3px;
+    background: rgba(23,68,46,0.3);
+  }
 
 </style>
 {% endblock %}
