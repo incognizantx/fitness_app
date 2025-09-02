@@ -28,6 +28,11 @@ def profile():
         if form.weight_kg.data is not None:
             current_user.weight_kg = form.weight_kg.data
             updated = True
+        # Update BMI if height or weight changed
+        if (form.height_cm.data is not None or form.weight_kg.data is not None):
+            if current_user.height_cm and current_user.weight_kg:
+                h_m = max(current_user.height_cm, 1.0) / 100.0
+                current_user.bmi = round(current_user.weight_kg / (h_m * h_m), 1)
         if updated:
             db.session.commit()
             flash("Profile updated successfully!", "success")
@@ -80,7 +85,6 @@ def planner():
     if form.validate_on_submit():
         # Use the generator to create plan and days
         generate_plan_for_user(
-            intensity=form.intensity.data or "Medium",
             user=current_user,
             days=form.days.data,
             goal=form.goal.data

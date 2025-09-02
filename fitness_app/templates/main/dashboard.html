@@ -51,11 +51,11 @@
     {% endif %}
   </div>
   {% set all_completed = today and today.items|selectattr('completed')|select|list|length == today.items|length %}
-  <div id="all-completed-message" style="display: {% if all_completed %}block{% else %}none{% endif %}; margin-bottom: 1em;">
+  <div id="all-completed-message" class="collapsible-content{% if all_completed %} open{% endif %}" style="margin-bottom: 1em;">
     All tasks for today are completed! Great job!
     <h3>Workout Plan</h3>
   </div>
-  <div id="workout-table-container" style="display: {% if all_completed %}block{% else %}none{% endif %};">
+  <div id="workout-table-container" class="collapsible-content{% if all_completed %} open{% endif %}">
     <div style="display: flex; justify-content: center;">
       <div style="max-width: 900px; width: 100%;">
         {% if days %}
@@ -122,6 +122,7 @@
     </div>
   </div>
 </div>
+                        
 
 <script>
 function toggleItem(id) {
@@ -151,11 +152,14 @@ document.addEventListener('DOMContentLoaded', function() {
           btn.disabled = true;
 
           if (data.all_completed) {
-            document.getElementById('all-completed-message').style.display = 'block';
-            document.getElementById('workout-table-container').style.display = 'block';
+            document.getElementById('all-completed-message').classList.add('open');
+            document.getElementById('workout-table-container').classList.add('open');
             // Collapse all open items
             document.querySelectorAll('.collapsible-content.open').forEach(function(el) {
-              el.classList.remove('open');
+              // Don't collapse the newly opened sections
+              if (el.id !== 'all-completed-message' && el.id !== 'workout-table-container') {
+                el.classList.remove('open');
+              }
             });
           }
         }
@@ -176,6 +180,11 @@ document.addEventListener('DOMContentLoaded', function() {
 .collapsible-content.open {
   max-height: 800px; /* large enough for your content */
   opacity: 1;
+}
+
+/* Allow the workout table to expand further when opened */
+#workout-table-container.collapsible-content.open {
+  max-height: 2000px;
 }
 
 .progress-cell {

@@ -5,6 +5,7 @@ joblib
 Flask-Login
 Flask-WTF
 Flask-SQLAlchemy
+Flask-Migrate
 email-validator
 python-dotenv
 pandas

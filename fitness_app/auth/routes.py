@@ -27,6 +27,10 @@ def register():
             previous_goal=form.previous_goal.data or "Weight Loss"
         )
         user.set_password(form.password.data)
+        # Calculate BMI and store
+        if user.height_cm and user.weight_kg:
+            h_m = max(user.height_cm, 1.0) / 100.0
+            user.bmi = round(user.weight_kg / (h_m * h_m), 1)
         db.session.add(user)
         db.session.commit()
         flash("Account created! Please log in.", "success")

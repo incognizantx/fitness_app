@@ -21,6 +21,7 @@ class User(UserMixin, db.Model):
     user_rating = db.Column(db.Float, default=4.0)
     plan_adherence_rate = db.Column(db.Float, default=0.8)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    bmi = db.Column(db.Float)
 
     def set_password(self, password: str):
         self.password_hash = generate_password_hash(password)
