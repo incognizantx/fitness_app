@@ -15,11 +15,11 @@ BANKS = {
         "strength": [
             "Goblet squats", "Walking lunges", "Kettlebell swings", "Plank", "Dips",
             "Push-ups", "Mountain climbers", "Bodyweight squats", "Step-ups", "Burpees",
-            "Russian twists", "Jumping jacks", "Side lunges", "Supermans"
+            "Russian twists", "Jumping jacks", "Side lunges"
         ],
         "cardio": [
             "Incline walk", "Steady run", "Tempo run", "Cycling", "Elliptical",
-            "Stair climber", "Swim", "Jump rope", "HIIT sprints", "Rowing machine"
+            "Stair climber", "Swim", "Jump rope", "Rowing machine"
         ]
     },
     "Muscle Gain": {
@@ -41,7 +41,7 @@ BANKS = {
         ],
         "cardio": [
             "Steady run", "Tempo run", "Cycling", "Swim", "Incline walk",
-            "Rowing machine", "Stair climber", "Jump rope", "HIIT intervals"
+            "Rowing machine", "Stair climber", "Jump rope"
         ]
     }
 }
@@ -66,7 +66,28 @@ MEDIA_LINKS = {
     "Cycling": "https://cdn.mos.cms.futurecdn.net/v2/t:139,l:0,cw:2700,ch:1518,q:80,w:2700/WXZQnTcQHyt2igzrwhNUyW.jpg",
     "Elliptical": "https://shop.lifefitness.com/cdn/shop/products/life-fitness-e5-adjustable-stride-elliptical-cross-trainer-woman-1000x1000.jpg?v=1748945400&width=1000",
     "Stair climber": "https://assets.clevelandclinic.org/transform/LargeFeatureImage/30ac4994-09bb-4ebd-b114-46d1af479237/stair-stepper-gym-1474835659-r",
-    "Swim": "https://www.swimnow.co.uk/wp-content/uploads/2023/05/Health-Benefits-of-Swimming.jpg"
+    "Swim": "https://www.swimnow.co.uk/wp-content/uploads/2023/05/Health-Benefits-of-Swimming.jpg",
+    "Push-ups": "https://www.youtube.com/embed/WDIpL0pjun0?si=ZOHslrfgjZjlMWGU",
+    "Mountain climbers": "https://www.youtube.com/embed/cnyTQDSE884?si=1JmX4f0kHfY4bX8G",
+    "Bodyweight squats": "https://www.youtube.com/embed/aclHkVaku9U",
+    "Step-ups": "https://www.youtube.com/embed/URHdW9js6DM",
+    "Burpees": "https://www.youtube.com/embed/OO7-dWIy0W8",
+    "Russian twists": "https://www.youtube.com/embed/wkD8rjkodUI",
+    "Jumping jacks": "https://www.youtube.com/embed/uLVt6u15L98",
+    "Side lunges": "https://www.youtube.com/embed/0R9ZQd3aM6s",
+    "Jump rope": "https://www.youtube.com/embed/u3zgHI8QnqE",
+    "Dumbbell curls": "https://www.youtube.com/embed/CFBZ4jN1CMI",
+    "Tricep extensions": "https://www.youtube.com/embed/kZ-ReOdn2qk",
+    "Chest fly": "https://www.youtube.com/embed/Nhvz9EzdJ4U",
+    "Lat pulldown": "https://www.youtube.com/embed/NAIEnMjN-6w",
+    "Leg press": "https://www.youtube.com/embed/cDGOn-yfKJA",
+    "Weighted dips": "https://www.youtube.com/embed/MhPl9Vf4toc",
+    "Bulgarian split squats": "https://www.youtube.com/embed/2C-uNgKwPLE",
+    "Hammer curls": "https://www.youtube.com/embed/CFBZ4jN1CMI",
+    "Farmer's walk": "https://www.youtube.com/embed/8OtwXwrJizk",
+    "Sled push": "https://www.youtube.com/embed/QwscR2BhdEg"
+
+
 }
 def bmi_from_profile(u: User) -> float | None:
     return u.bmi
@@ -137,38 +158,3 @@ def predict_intensity_from_bmi(bmi: float) -> str:
     pred = int(clf.predict([[bmi]])[0])
     return ["Low", "Medium", "High"][pred]
 
-
-# Weight Loss:
-
-# Push-ups
-# Mountain climbers
-# Bodyweight squats 
-# Step-ups
-# Burpees
-# Russian twists
-# Jumping jacks
-# Side lunges
-# Supermans
-# Jump rope
-# HIIT sprints
-# Muscle Gain:
-
-# Dumbbell curls
-# Tricep extensions
-# Chest fly
-# Lat pulldown
-# Leg press
-# Weighted dips
-# Bulgarian split squats
-# Hammer curls
-# Farmer's walk
-# Sled push
-# Endurance:
-
-# Step-ups
-# Supermans
-# Side lunges
-# Mountain climbers
-# Jumping jacks
-# Jump rope
-# HIIT intervals
